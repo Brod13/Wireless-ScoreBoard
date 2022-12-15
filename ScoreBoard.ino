@@ -15,17 +15,14 @@ HUB75_I2S_CFG mxconfig(
   PANEL_CHAIN    // Chain length
 );
 
-struct team{
+struct Team{
   char* name;
-  int points;
-}
+  char* points;
+};
 
 
-team GSW, LAL;
-GSW.name = "GSW";
-GSW.points = 120;
-LAL.name = "LAL";
-LAL.points = 119;
+struct Team GSW;
+struct Team LAL;
 
 
 void setup()
@@ -35,6 +32,11 @@ void setup()
   Serial.begin(115200);
   delay(200);
 
+  GSW.name = "GSW";
+  GSW.points = "120";
+  LAL.name = "LAL";
+  LAL.points = "119";
+
   Serial.println("...Starting Display");
   //mxconfig.double_buff = true; // Turn of double buffer
   mxconfig.clkphase = false;
@@ -43,8 +45,8 @@ void setup()
   display = new MatrixPanel_I2S_DMA(mxconfig);
   display->begin();  // setup display with pins as pre-defined in the library
 
-  writeText("WELCOME", 7, 20, 10, 2, 1);
-  delay(500);
+  // writeText("WELCOME", 7, 20, 10, 2, 1);
+  // delay(500);
 
 }
 
@@ -53,10 +55,9 @@ void loop()
   display->flipDMABuffer(); // not used if double buffering isn't enabled
   delay(25);
   display->clearScreen();
-  
-    writeText("LAL vs GSW",10, 2, 2, 1, 3);
-    writeText("122",3, 0, 11, 2, 1);
-    writeText("120",3, 36, 11, 2, 2);
+  Serial.println("...Starting aADASD");
+  showMatch(GSW, LAL);
+
 }
 
 void writeText(char* text, int size, int x, int y, int textSize, int color)
@@ -81,19 +82,18 @@ void writeText(char* text, int size, int x, int y, int textSize, int color)
     // Draw rect and then calculate
     display->drawChar(1+x, y, *(text+i), colorChar, 0x0000, textSize);
 
-  if(textSize == 1)
-  {
-    x+=6; 
-  }else if(textSize == 2 && (char[i] == '1;))
-  {
-    x+=9; 
-  }else
-  {
-    x+=11; 
-  }
-    
+    if(textSize == 1)
+    {
+      x+=6; 
+    }else if(textSize == 2 && (text[i] == '1'))
+    {
+      x+=9; 
+    }else
+    {
+      x+=11; 
+    }
 
-    if(position >=MATRIX_WIDTH-6)
+    if(x >=MATRIX_WIDTH-6)
     {
       y+=9;
       // display->setCursor(1,line*8);
@@ -101,5 +101,39 @@ void writeText(char* text, int size, int x, int y, int textSize, int color)
   }
 
   // oldCursorPos = display->getCursorY;
+
+}
+
+void showMatch(Team team1, Team team2)
+{
+  Serial.println("1");
+
+    char* teamsName = (char*)malloc(10*sizeof(char)); 
+  Serial.println("2");
+
+    saveTeamsName(team1.name, team2.name, teamsName);
+  Serial.println("3");
+
+  
+    writeText(teamsName,10, 2, 2, 1, 3);
+    // writeText("GSW VS LAL",10, 2, 2, 1, 3);
+
+    writeText("122",3, 0, 11, 2, 1);
+    writeText("120",3, 36, 11, 2, 2);
+}
+
+void saveTeamsName(char* team1, char* team2, char* teamsName)
+{
+  // char[] = {team1[0],team1[1], team1[2], ' ', 'v', 's', ' ', team2[0],team2[1], team2[2]};
+  teamsName[0]=team1[0];
+  teamsName[1]=team1[1];
+  teamsName[2]=team1[2];
+  teamsName[3]=' ';
+  teamsName[4]='v';
+  teamsName[5]='s';
+  teamsName[6]=' ';
+  teamsName[7]=team2[0];
+  teamsName[8]=team2[1];
+  teamsName[9]=team2[2];
 
 }
