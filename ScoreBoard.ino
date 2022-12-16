@@ -21,8 +21,8 @@ struct Team{
 };
 
 
-struct Team GSW;
-struct Team LAL;
+struct Team team1;
+struct Team team2;
 
 
 void setup()
@@ -32,11 +32,6 @@ void setup()
   Serial.begin(115200);
   delay(200);
 
-  GSW.name = "GSW";
-  GSW.points = "120";
-  LAL.name = "LAL";
-  LAL.points = "119";
-
   Serial.println("...Starting Display");
   //mxconfig.double_buff = true; // Turn of double buffer
   mxconfig.clkphase = false;
@@ -45,8 +40,8 @@ void setup()
   display = new MatrixPanel_I2S_DMA(mxconfig);
   display->begin();  // setup display with pins as pre-defined in the library
 
-  // writeText("WELCOME", 7, 20, 10, 2, 1);
-  // delay(500);
+  writeText("WELCOME", 7, 20, 10, 1, 1);
+  delay(500);
 
 }
 
@@ -56,7 +51,13 @@ void loop()
   delay(25);
   display->clearScreen();
   Serial.println("...Starting aADASD");
-  showMatch(GSW, LAL);
+
+  team1.name = "GSW";
+  team1.points = "120";
+  team2.name = "LAL";
+  team2.points = "119";
+
+  showMatch(team1, team2);
 
 }
 
@@ -80,7 +81,7 @@ void writeText(char* text, int size, int x, int y, int textSize, int color)
   for (int i = 0; i <size; i++)
   {
     // Draw rect and then calculate
-    display->drawChar(1+x, y, *(text+i), colorChar, 0x0000, textSize);
+    display->drawChar(x, y, *(text+i), colorChar, 0x0000, textSize);
 
     if(textSize == 1)
     {
@@ -118,8 +119,8 @@ void showMatch(Team team1, Team team2)
     writeText(teamsName,10, 2, 2, 1, 3);
     // writeText("GSW VS LAL",10, 2, 2, 1, 3);
 
-    writeText("122",3, 0, 11, 2, 1);
-    writeText("120",3, 36, 11, 2, 2);
+    writeText(team1.points,3, 0, 11, 2, 1);
+    writeText(team2.points,3, 32, 11, 2, 2);
 }
 
 void saveTeamsName(char* team1, char* team2, char* teamsName)
